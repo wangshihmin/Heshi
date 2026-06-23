@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA 建設</title>
+<style>
+/* ===== RESET & BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#1A1714;
+  --ink2:#2E2A25;
+  --mid:#6B6258;
+  --soft:#9C9188;
+  --pale:#F5F2EE;
+  --paler:#FAFAF7;
+  --white:#FFFFFF;
+  --gold:#B8976A;
+  --gold2:#D4AA7A;
+  --gold-pale:#EDE0CB;
+  --serif:'Georgia','Times New Roman',serif;
+  --sans:'Helvetica Neue','PingFang TC','Microsoft JhengHei',sans-serif;
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--sans);}
+
+/* ===== PAGES CONTAINER ===== */
+#app{width:100%;height:100vh;position:relative;}
+
+.page{
+  position:absolute;inset:0;
+  width:100%;height:100vh;
+  overflow-y:auto;overflow-x:hidden;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.5s ease;
+  background:var(--ink);
+}
+.page.active{opacity:1;pointer-events:all;}
+#page-aura{background:var(--pale);}
+
+/* ===== FIXED NAV ===== */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  background:rgba(26,23,20,0.88);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+}
+.nav-logo-icon{
+  width:28px;height:28px;
+  border:1.5px solid var(--gold);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--gold);font-family:var(--serif);
+  letter-spacing:0;
+}
+.nav-logo-text{
+  font-family:var(--serif);font-size:17px;
+  color:var(--white);letter-spacing:0.12em;
+}
+.nav-logo-text span{color:var(--gold);}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-link{
+  background:none;border:none;
+  color:rgba(255,255,255,0.65);
+  font-size:12.5px;letter-spacing:0.08em;
+  padding:8px 14px;cursor:pointer;
+  font-family:var(--sans);
+  position:relative;transition:color 0.2s;
+  white-space:nowrap;
+}
+.nav-link::after{
+  content:'';position:absolute;bottom:4px;left:14px;right:14px;
+  height:1px;background:var(--gold);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.25s ease;
+}
+.nav-link:hover{color:var(--white);}
+.nav-link.active{color:var(--white);}
+.nav-link.active::after{transform:scaleX(1);}
+.nav-sep{width:1px;height:14px;background:rgba(255,255,255,0.15);margin:0 4px;}
+.nav-admin-btn{
+  background:none;border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.5);font-size:11px;letter-spacing:0.12em;
+  padding:5px 14px;cursor:pointer;font-family:var(--sans);
+  transition:all 0.2s;
+}
+.nav-admin-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ===== PAGE 1: 首頁 ===== */
+#page-home{background:var(--ink);}
+.home-hero{
+  height:100vh;position:relative;
+  display:flex;align-items:center;
+  overflow:hidden;
+}
+.hero-bg-fill{
+  position:absolute;inset:0;
+  background:linear-gradient(130deg,#0E0C0A 0%,#1C1915 40%,#252018 70%,#1A1714 100%);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  transition:background-image 0.3s;
+}
+/* Dark overlay on top of hero bg image */
+.hero-bg-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(130deg,rgba(10,8,6,0.82) 0%,rgba(20,17,12,0.65) 50%,rgba(10,8,6,0.75) 100%);
+  z-index:1;
+}
+/* When image is set, hero children need z-index above overlay */
+.hero-lines{position:absolute;inset:0;z-index:2;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size:80px 80px;
+}
+/* Right side image simulation */
+.hero-right-panel{
+  position:absolute;right:0;top:0;bottom:0;width:48%;
+  background:linear-gradient(160deg,#2A2218 0%,#1E1B14 50%,#151210 100%);
+  clip-path:polygon(12% 0,100% 0,100% 100%,0 100%);
+  z-index:2;
+}
+.hero-right-inner{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-arch-visual{
+  width:100%;height:100%;
+  background:
+    radial-gradient(ellipse 60% 80% at 60% 50%, rgba(184,151,106,0.08) 0%, transparent 70%),
+    linear-gradient(180deg,rgba(255,255,255,0.03) 0%,transparent 60%);
+  display:flex;align-items:center;justify-content:center;
+}
+/* Geometric building silhouette */
+.building-svg{opacity:0.18;width:260px;}
+.hero-content{
+  position:relative;z-index:3;
+  padding:0 0 0 72px;
+  max-width:640px;
+}
+.hero-eyebrow{
+  font-size:10.5px;letter-spacing:0.35em;
+  color:var(--gold);margin-bottom:28px;
+  display:flex;align-items:center;gap:16px;
+  text-transform:uppercase;
+}
+.hero-eyebrow::before{
+  content:'';display:block;width:32px;height:1px;background:var(--gold);flex-shrink:0;
+}
+.hero-h1{
+  font-family:var(--serif);
+  font-size:clamp(44px,5.5vw,76px);
+  font-weight:400;line-height:1.12;
+  color:var(--white);margin-bottom:10px;
+  letter-spacing:0.02em;
+}
+.hero-h1 .gold{color:var(--gold);}
+.hero-h1 .en{font-size:0.48em;letter-spacing:0.15em;display:block;margin-bottom:14px;color:rgba(255,255,255,0.35);font-family:var(--sans);}
+.hero-rule{width:48px;height:1px;background:var(--gold);margin:28px 0;}
+.hero-body{
+  font-size:14.5px;line-height:1.95;
+  color:rgba(255,255,255,0.5);
+  max-width:440px;margin-bottom:44px;
+}
+.hero-lua{
+  display:flex;gap:40px;margin-bottom:52px;
+  padding-top:28px;border-top:1px solid rgba(255,255,255,0.08);
+}
+.lua-col .lua-en{font-size:19px;color:var(--white);letter-spacing:0.04em;margin-bottom:3px;}
+.lua-col .lua-zh{font-size:10px;color:var(--gold);letter-spacing:0.2em;margin-bottom:7px;}
+.lua-col .lua-desc{font-size:11.5px;color:rgba(255,255,255,0.38);line-height:1.55;}
+.hero-btns{display:flex;gap:14px;}
+.btn-gold{
+  background:var(--gold);color:var(--white);border:none;
+  padding:13px 36px;font-size:12.5px;letter-spacing:0.12em;
+  cursor:pointer;font-family:var(--sans);transition:background 0.2s;
+}
+.btn-gold:hover{background:#A07B55;}
+.btn-outline-w{
+  background:none;color:rgba(255,255,255,0.55);
+  border:1px solid rgba(255,255,255,0.22);
+  padding:13px 36px;font-size:12.5px;letter-spacing:0.1em;
+  cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+}
+.btn-outline-w:hover{border-color:var(--gold);color:var(--gold);}
+.hero-badge{
+  display:flex;align-items:center;gap:10px;
+  color:rgba(255,255,255,0.25);font-size:10px;letter-spacing:0.2em;
+  margin-top:28px;
+}
+.badge-ring{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;letter-spacing:0.05em;color:rgba(255,255,255,0.3);
+  font-family:var(--serif);
+}
+.scroll-dot{
+  position:absolute;bottom:44px;right:52px;z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.scroll-dot span{font-size:9px;letter-spacing:0.25em;color:rgba(255,255,255,0.25);writing-mode:vertical-rl;}
+.scroll-dot .s-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(184,151,106,0.8),transparent);animation:sdrop 1.8s ease-in-out infinite;}
+@keyframes sdrop{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1}100%{opacity:0;transform:scaleY(1);transform-origin:top}}
+
+/* ===== PAGE 2: 企業精神 ===== */
+#page-spirit{background:var(--ink);}
+.spirit-split{display:flex;height:100vh;padding-top:64px;}
+.spirit-left{
+  width:42%;padding:80px 60px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+  background:linear-gradient(160deg,#1A1714 0%,#201D19 100%);
+}
+.spirit-bg-text{
+  position:absolute;right:-30px;top:50%;transform:translateY(-50%);
+  font-family:var(--serif);font-size:160px;font-weight:400;
+  color:rgba(255,255,255,0.02);letter-spacing:-0.05em;
+  pointer-events:none;user-select:none;line-height:1;
+}
+.sp-eyebrow{font-size:10px;letter-spacing:0.32em;color:var(--gold);text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+.sp-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+.sp-h2{font-family:var(--serif);font-size:clamp(32px,3.5vw,52px);font-weight:400;line-height:1.2;color:var(--white);margin-bottom:12px;}
+.sp-h2 em{color:var(--gold);font-style:normal;}
+.sp-sub{font-size:11px;letter-spacing:0.2em;color:rgba(255,255,255,0.3);margin-bottom:28px;}
+.sp-rule{width:36px;height:1px;background:var(--gold);margin-bottom:24px;}
+.sp-body{font-size:14px;line-height:1.95;color:rgba(255,255,255,0.5);margin-bottom:40px;}
+.lua-blocks{display:flex;flex-direction:column;gap:0;}
+.lua-block{
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:18px 0;
+  display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
+}
+.lua-block:last-child{border-bottom:1px solid rgba(255,255,255,0.08);}
+.lb-en{font-size:15px;color:var(--white);letter-spacing:0.04em;min-width:110px;}
+.lb-zh{font-size:10px;color:var(--gold);letter-spacing:0.18em;margin-bottom:6px;}
+.lb-desc{font-size:12px;color:rgba(255,255,255,0.38);line-height:1.6;}
+.spirit-right{
+  width:58%;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#252018 0%,#1A1714 100%);
+}
+.spirit-right-content{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:56px 64px;
+}
+.spirit-visual{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 65% 40%, rgba(184,151,106,0.07) 0%, transparent 70%),
+    repeating-linear-gradient(45deg,transparent,transparent 60px,rgba(255,255,255,0.012) 60px,rgba(255,255,255,0.012) 61px);
+}
+.spirit-quote{
+  font-family:var(--serif);
+  font-size:clamp(24px,2.8vw,38px);
+  font-weight:400;line-height:1.5;
+  color:var(--white);margin-bottom:20px;
+}
+.spirit-quote em{color:var(--gold);font-style:normal;}
+.spirit-attr{font-size:11px;letter-spacing:0.2em;color:rgba(255,255,255,0.3);}
+.spirit-tabs-bottom{
+  display:flex;gap:0;
+  position:absolute;bottom:0;left:0;right:0;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+.sp-tab{
+  flex:1;padding:16px;background:none;border:none;
+  color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:0.1em;
+  cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+.sp-tab:last-child{border-right:none;}
+.sp-tab.active,.sp-tab:hover{color:var(--gold);background:rgba(184,151,106,0.06);}
+
+/* Spirit sub-panels */
+.spirit-panel{display:none;}
+.spirit-panel.active{display:block;}
+.brand-phil{
+  padding:56px 64px;height:100%;display:flex;flex-direction:column;justify-content:center;
+}
+.bp-title{font-family:var(--serif);font-size:28px;color:var(--white);margin-bottom:16px;}
+.bp-body{font-size:13.5px;color:rgba(255,255,255,0.5);line-height:1.9;max-width:480px;}
+
+/* ===== PAGE 3: 預約賞屋 / AURA ===== */
+#page-aura{background:var(--pale);}
+.aura-header{
+  padding-top:64px;
+  background:var(--ink);
+  min-height:320px;
+  position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;
+}
+.aura-header-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 100% at 50% 0%, rgba(184,151,106,0.1) 0%, transparent 70%);
+}
+.aura-header-content{
+  position:relative;z-index:1;
+  padding:60px 72px;width:100%;
+}
+.aura-hd-en{font-size:10px;letter-spacing:0.32em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.aura-hd-en::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+.aura-hd-title{font-family:var(--serif);font-size:clamp(36px,4vw,58px);color:var(--white);font-weight:400;margin-bottom:12px;}
+.aura-hd-sub{font-size:13px;color:rgba(255,255,255,0.45);letter-spacing:0.05em;}
+/* Classic timeline */
+.classic-section{
+  background:var(--paler);padding:72px;
+}
+.cl-head{font-size:10px;letter-spacing:0.3em;color:var(--soft);text-transform:uppercase;margin-bottom:8px;}
+.cl-title{font-family:var(--serif);font-size:40px;font-weight:400;color:var(--ink);margin-bottom:4px;}
+.cl-sub{font-size:11px;letter-spacing:0.2em;color:var(--soft);margin-bottom:56px;}
+.timeline-scroll{overflow-x:auto;padding-bottom:20px;}
+.timeline-row{
+  display:flex;gap:0;min-width:900px;
+  position:relative;
+}
+.timeline-row::after{
+  content:'';position:absolute;
+  bottom:62px;left:5%;right:5%;
+  height:1px;background:var(--gold-pale);
+}
+.tl-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:0;
+  cursor:pointer;transition:opacity 0.2s;
+}
+.tl-item:hover{opacity:0.8;}
+.tl-photo{
+  width:calc(100% - 8px);height:160px;margin-bottom:16px;
+  background:linear-gradient(135deg,#C4B8A8,#8C7B6B);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+  font-size:40px;color:rgba(255,255,255,0.3);
+  position:relative;
+}
+.tl-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(26,23,20,0.7) 0%,transparent 55%);
+  display:flex;align-items:flex-end;padding:10px 12px;
+}
+.tl-pname{font-family:var(--serif);font-size:14px;color:var(--white);}
+.tl-dot{
+  width:9px;height:9px;border-radius:50%;background:var(--gold);
+  position:relative;z-index:1;margin-bottom:10px;flex-shrink:0;
+}
+.tl-year{font-size:11px;color:var(--soft);letter-spacing:0.1em;margin-bottom:4px;}
+.tl-name{font-size:13px;color:var(--ink);text-align:center;}
+
+/* Project cards grid */
+.projects-grid-section{padding:64px 72px;background:var(--white);}
+.pg-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;}
+.pg-label{font-size:10px;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+.pg-title{font-family:var(--serif);font-size:28px;color:var(--ink);font-weight:400;}
+.pg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.pg-card{
+  position:relative;overflow:hidden;
+  aspect-ratio:3/4;cursor:pointer;
+  background:linear-gradient(135deg,#C4B8A8,#8C7B6B);
+}
+.pg-card.wide{grid-column:span 2;aspect-ratio:unset;min-height:360px;}
+.pg-card-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;color:rgba(255,255,255,0.2);
+  transition:transform 0.6s ease;
+}
+.pg-card:hover .pg-card-bg{transform:scale(1.05);}
+.pg-card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(26,23,20,0.88) 0%,transparent 55%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:24px;
+}
+.pgc-year{font-size:10px;color:var(--gold);letter-spacing:0.2em;margin-bottom:6px;}
+.pgc-name{font-family:var(--serif);font-size:20px;color:var(--white);margin-bottom:3px;}
+.pgc-type{font-size:11px;color:rgba(255,255,255,0.45);}
+
+/* ===== PAGE 4: 客戶服務 ===== */
+#page-service{background:var(--ink);}
+.service-layout{display:flex;height:100vh;padding-top:64px;}
+.service-left{
+  width:44%;
+  background:linear-gradient(160deg,#1A1714,#1E1B14);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:72px 60px;position:relative;overflow:hidden;
+}
+.svc-visual{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 20% 60%,rgba(184,151,106,0.06) 0%,transparent 70%);
+}
+.svc-eyebrow{font-size:10px;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.svc-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+.svc-sub-en{font-size:12px;letter-spacing:0.15em;color:rgba(255,255,255,0.3);margin-bottom:10px;}
+.svc-title{font-family:var(--serif);font-size:clamp(28px,3vw,46px);color:var(--white);font-weight:400;line-height:1.25;margin-bottom:28px;}
+.svc-rule{width:36px;height:1px;background:var(--gold);margin-bottom:24px;}
+.svc-intro{font-size:14px;color:rgba(255,255,255,0.5);line-height:1.9;margin-bottom:36px;}
+.svc-blocks{display:flex;flex-direction:column;gap:0;}
+.svc-block{
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:20px 0;
+}
+.svc-block:last-child{border-bottom:1px solid rgba(255,255,255,0.08);}
+.svc-block h4{font-family:var(--serif);font-size:16px;color:var(--white);font-weight:400;margin-bottom:7px;}
+.svc-block p{font-size:12.5px;color:rgba(255,255,255,0.4);line-height:1.7;}
+.service-right{
+  width:56%;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#211E19,#161411);
+}
+.svc-right-visual{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 70% at 60% 50%,rgba(184,151,106,0.09) 0%,transparent 65%),
+    repeating-linear-gradient(90deg,transparent,transparent 100px,rgba(255,255,255,0.012) 100px,rgba(255,255,255,0.012) 101px);
+}
+.svc-right-content{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:52px 60px;
+  background:linear-gradient(to top,rgba(26,23,20,0.95) 0%,transparent 100%);
+}
+.svc-coffee{
+  display:flex;align-items:flex-start;gap:20px;margin-bottom:28px;
+}
+.coffee-mark{
+  width:48px;height:48px;border-radius:50%;
+  border:1px solid rgba(184,151,106,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.coffee-q{font-family:var(--serif);font-size:22px;color:var(--white);line-height:1.5;margin-bottom:10px;}
+.coffee-p{font-size:13px;color:rgba(255,255,255,0.42);line-height:1.75;}
+.svc-brand-note{
+  display:flex;align-items:center;gap:14px;
+  padding-top:20px;border-top:1px solid rgba(255,255,255,0.07);
+}
+.svc-brand-icon{
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:rgba(255,255,255,0.3);flex-shrink:0;
+}
+.svc-brand-text{font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:0.15em;}
+
+/* COMMUNITY panels at bottom */
+.svc-community{
+  height:100vh;overflow-y:auto;padding-top:64px;
+  background:var(--paler);
+}
+.comm-layout{
+  display:grid;grid-template-columns:1fr 1.6fr;gap:0;
+  min-height:calc(100vh - 64px);
+}
+.comm-left{
+  padding:72px 60px;background:var(--paler);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.comm-eyebrow{font-size:10px;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.comm-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+.comm-h2{font-family:var(--serif);font-size:32px;font-weight:400;color:var(--ink);margin-bottom:32px;}
+.comm-block{margin-bottom:32px;}
+.comm-block h3{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--ink);margin-bottom:10px;}
+.comm-block p{font-size:13.5px;color:var(--mid);line-height:1.9;}
+.comm-rule{width:32px;height:1px;background:var(--gold);margin:20px 0;}
+.comm-tabs{display:flex;gap:24px;margin-top:28px;}
+.ctab{
+  font-size:12px;letter-spacing:0.08em;color:var(--soft);
+  padding:6px 0;cursor:pointer;background:none;border:none;
+  border-bottom:2px solid transparent;font-family:var(--sans);
+  transition:all 0.2s;
+}
+.ctab.active{color:var(--ink);border-bottom-color:var(--gold);}
+.comm-right{background:var(--ink2);position:relative;}
+.comm-mosaic{
+  display:grid;grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;height:100%;gap:2px;
+}
+.mosaic-tile{
+  background:linear-gradient(135deg,#2A2520,#1E1A16);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;color:rgba(255,255,255,0.15);
+  overflow:hidden;transition:opacity 0.3s;
+}
+.mosaic-tile.tall{grid-row:span 2;}
+
+/* Service sub-tabs */
+.svc-sub-tabs{
+  display:flex;gap:0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  margin-bottom:0;position:sticky;top:64px;z-index:50;
+  background:rgba(26,23,20,0.95);
+}
+.svc-stab{
+  padding:14px 28px;background:none;border:none;
+  color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:0.1em;
+  cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+  border-bottom:2px solid transparent;
+}
+.svc-stab.active,.svc-stab:hover{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ===== PAGE 5: 聯絡我們 ===== */
+#page-contact{background:var(--ink);}
+.contact-hero{
+  height:100vh;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding-top:64px;overflow:hidden;
+}
+.contact-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,#1A1714 0%,#201D19 100%);
+}
+.contact-bg-lines{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.contact-deco{
+  position:absolute;left:0;top:0;bottom:0;width:35%;
+  background:linear-gradient(to right,rgba(184,151,106,0.04),transparent);
+  display:flex;align-items:center;justify-content:center;
+}
+.contact-deco-inner{
+  font-family:var(--serif);font-size:180px;
+  color:rgba(255,255,255,0.02);writing-mode:vertical-rl;
+  letter-spacing:-0.1em;user-select:none;
+}
+.contact-box{
+  position:relative;z-index:2;
+  width:100%;max-width:860px;
+  padding:0 40px;
+}
+.contact-head{margin-bottom:48px;}
+.ct-eyebrow{font-size:10px;letter-spacing:0.32em;color:var(--gold);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.ct-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+.ct-title{font-family:var(--serif);font-size:clamp(32px,4vw,54px);color:var(--white);font-weight:400;margin-bottom:8px;}
+.ct-note{font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:0.06em;}
+.ct-form{}
+.ct-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.ct-field{display:flex;flex-direction:column;gap:8px;}
+.ct-field label{font-size:11px;letter-spacing:0.15em;color:rgba(255,255,255,0.4);}
+.ct-field label .req{color:var(--gold);}
+.ct-field input,
+.ct-field select,
+.ct-field textarea{
+  background:rgba(255,255,255,0.05);
+  border:none;border-bottom:1px solid rgba(255,255,255,0.15);
+  color:var(--white);font-size:14px;padding:10px 0;
+  font-family:var(--sans);outline:none;
+  transition:border-color 0.2s;width:100%;
+}
+.ct-field input::placeholder,.ct-field textarea::placeholder{color:rgba(255,255,255,0.2);}
+.ct-field input:focus,.ct-field select:focus,.ct-field textarea:focus{border-bottom-color:var(--gold);}
+.ct-field select option{background:#1A1714;}
+.ct-field textarea{height:90px;resize:vertical;}
+.ct-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:28px;padding-top:20px;
+  border-top:1px solid rgba(255,255,255,0.07);
+}
+.ct-agree{font-size:11.5px;color:rgba(255,255,255,0.28);line-height:1.6;}
+.ct-agree a{color:var(--gold);text-decoration:none;}
+.ct-submit{
+  background:var(--gold);color:var(--white);border:none;
+  padding:13px 44px;font-size:12.5px;letter-spacing:0.14em;
+  cursor:pointer;font-family:var(--sans);
+  transition:background 0.2s;white-space:nowrap;
+}
+.ct-submit:hover{background:#A07B55;}
+
+/* ===== ADMIN OVERLAY ===== */
+#admin-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(8,7,6,0.97);overflow-y:auto;
+}
+#admin-overlay.open{display:block;}
+.adm-wrap{max-width:980px;margin:0 auto;padding:56px 40px;}
+.adm-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:48px;
+}
+.adm-title{font-family:var(--serif);font-size:26px;color:var(--white);}
+.adm-close-btn{
+  background:none;border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.5);font-size:12px;letter-spacing:0.1em;
+  padding:7px 18px;cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+}
+.adm-close-btn:hover{border-color:var(--gold);color:var(--gold);}
+/* login */
+.adm-login{max-width:340px;margin:80px auto;text-align:center;}
+.adm-login h3{font-family:var(--serif);font-size:22px;color:var(--white);margin-bottom:8px;}
+.adm-login p{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:36px;}
+.adm-input{
+  width:100%;padding:11px 14px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--white);font-size:14px;font-family:var(--sans);
+  outline:none;margin-bottom:14px;
+  transition:border-color 0.2s;
+}
+.adm-input:focus{border-color:var(--gold);}
+.adm-btn{
+  background:var(--gold);color:var(--white);border:none;
+  padding:10px 28px;font-size:12.5px;letter-spacing:0.1em;
+  cursor:pointer;font-family:var(--sans);transition:background 0.2s;
+}
+.adm-btn:hover{background:#A07B55;}
+.adm-btn.sm{padding:7px 16px;font-size:11.5px;}
+.adm-btn.danger{background:rgba(160,50,50,0.3);color:#F09090;}
+.adm-btn.danger:hover{background:rgba(160,50,50,0.5);}
+.adm-err{font-size:12px;color:#F08080;margin-top:10px;display:none;}
+.adm-hint{font-size:10.5px;color:rgba(255,255,255,0.18);margin-top:28px;}
+/* tabs */
+.adm-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:40px;}
+.adm-tab{
+  padding:12px 26px;background:none;
+  border:none;border-bottom:2px solid transparent;
+  color:rgba(255,255,255,0.38);font-size:12.5px;letter-spacing:0.1em;
+  cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+}
+.adm-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.adm-panel{display:none;}
+.adm-panel.active{display:block;}
+/* fields */
+.adm-section{font-size:10px;letter-spacing:0.28em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;}
+.adm-field{margin-bottom:16px;}
+.adm-field label{display:block;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;margin-bottom:7px;}
+.adm-field input,.adm-field select,.adm-field textarea{
+  width:100%;padding:9px 12px;
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--white);font-size:13.5px;font-family:var(--sans);outline:none;
+  transition:border-color 0.2s;
+}
+.adm-field input:focus,.adm-field select:focus,.adm-field textarea:focus{border-color:var(--gold);}
+.adm-field textarea{height:85px;resize:vertical;}
+.adm-field select option{background:#1A1714;}
+.adm-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.adm-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.adm-hr{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:28px 0;}
+/* project list */
+.adm-plist{margin-top:24px;display:flex;flex-direction:column;gap:6px;}
+.adm-pitem{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+}
+.adm-pitem-l{display:flex;flex-direction:column;gap:3px;}
+.adm-pitem-name{color:var(--white);font-size:14px;}
+.adm-pitem-meta{color:rgba(255,255,255,0.35);font-size:11.5px;}
+.adm-pitem-r{display:flex;gap:8px;}
+/* messages */
+.adm-msgs{display:flex;flex-direction:column;gap:10px;}
+.adm-msg{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  padding:18px;
+}
+.adm-msg-meta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:11.5px;}
+.adm-msg-name{color:var(--gold);}
+.adm-msg-info{color:rgba(255,255,255,0.35);}
+.adm-msg-time{color:rgba(255,255,255,0.25);margin-left:auto;}
+.adm-msg-badge{
+  font-size:10px;padding:3px 10px;letter-spacing:0.1em;
+  cursor:pointer;transition:all 0.2s;
+}
+.adm-msg-badge.new{background:rgba(184,151,106,0.15);color:var(--gold);}
+.adm-msg-badge.read{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);}
+.adm-msg-body{font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75;}
+/* notice */
+.adm-notice{
+  background:rgba(184,151,106,0.12);border:1px solid rgba(184,151,106,0.25);
+  color:var(--gold);padding:11px 18px;font-size:12.5px;
+  margin-bottom:22px;display:none;
+}
+.adm-notice.show{display:block;}
+
+/* Image upload */
+.img-upload-zone{
+  border:1.5px dashed rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.03);
+  cursor:pointer;transition:border-color 0.2s;
+  min-height:140px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;
+}
+.img-upload-zone:hover{border-color:var(--gold);}
+.img-preview-empty{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:24px;text-align:center;pointer-events:none;
+}
+.img-upload-icon{
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:rgba(255,255,255,0.4);
+}
+.img-upload-hint{font-size:12.5px;color:rgba(255,255,255,0.4);line-height:1.7;}
+.img-upload-hint span{font-size:11px;color:rgba(255,255,255,0.22);}
+.img-preview-filled{
+  width:100%;height:140px;object-fit:cover;display:block;
+  pointer-events:none;
+}
+.img-change-btn{
+  position:absolute;bottom:8px;right:8px;
+  background:rgba(26,23,20,0.85);color:rgba(255,255,255,0.7);
+  border:1px solid rgba(255,255,255,0.2);font-size:11px;
+  padding:4px 12px;cursor:pointer;font-family:var(--sans);
+  transition:all 0.2s;
+}
+.img-change-btn:hover{border-color:var(--gold);color:var(--gold);}
+/* project list thumb */
+.adm-pitem-thumb{
+  width:64px;height:48px;object-fit:cover;flex-shrink:0;
+  background:rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:rgba(255,255,255,0.3);
+  overflow:hidden;
+}
+.adm-pitem-thumb img{width:100%;height:100%;object-fit:cover;}
+
+/* ===== PAGE BG IMAGE SYSTEM ===== */
+/*
+  Each page has its own .pbg (photo) + .pov (overlay) absolutely positioned
+  inside the page scroll container. Content sections sit above them via z-index.
+  Inner sections keep semi-transparent dark backgrounds so text remains legible.
+*/
+.pbg{
+  position:absolute;top:0;left:0;right:0;
+  height:100vh;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  z-index:0;pointer-events:none;
+  /* stays fixed relative to viewport while the page scrolls */
+  position:fixed;top:0;left:0;right:0;bottom:0;
+}
+.pov{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:1;pointer-events:none;
+}
+/* Hide bg/overlay of inactive pages */
+.page:not(.active) .pbg,
+.page:not(.active) .pov{visibility:hidden;}
+
+/* All page content sits above the bg layers */
+.page > *:not(.pbg):not(.pov){position:relative;z-index:2;}
+
+/* Nav / drawer / footer / admin always on top */
+#nav,#mobile-drawer,#site-footer,#admin-overlay{z-index:200;}
+#mobile-drawer{z-index:190;}
+#site-footer{z-index:150;}
+#admin-overlay{z-index:9999;}
+
+/* has-bg: darken content sections instead of making them transparent */
+/* Keep section backgrounds but add a subtle colour wash so text pops */
+.page.has-bg .spirit-left,
+.page.has-bg .spirit-right,
+.page.has-bg .service-left,
+.page.has-bg .service-right{
+  background:rgba(16,13,10,0.55) !important;
+}
+.page.has-bg .spirit-split,
+.page.has-bg .service-layout{background:transparent !important;}
+.page.has-bg .classic-section{background:rgba(245,242,238,0.18) !important;}
+.page.has-bg .projects-grid-section{background:rgba(255,255,255,0.12) !important;}
+.page.has-bg .aura-header{background:rgba(16,13,10,0.55) !important;}
+.page.has-bg .contact-hero{background:transparent !important;}
+.page.has-bg .contact-bg,.page.has-bg .contact-bg-lines{background:transparent !important;}
+.page.has-bg #svc-panel-perfectly{background:transparent !important;}
+.page.has-bg #svc-panel-community{background:transparent !important;}
+.page.has-bg .comm-left{background:rgba(245,242,238,0.15) !important;}
+.page.has-bg .comm-right{background:rgba(16,13,10,0.5) !important;}
+.page.has-bg .svc-right-visual,
+.page.has-bg .svc-visual,
+.page.has-bg .spirit-visual,
+.page.has-bg .aura-header-bg{opacity:0;}
+
+/* ===== SCROLLBAR ===== */
+.page::-webkit-scrollbar{width:4px;}
+.page::-webkit-scrollbar-track{background:transparent;}
+.page::-webkit-scrollbar-thumb{background:rgba(184,151,106,0.3);border-radius:2px;}
+
+/* ===== HAMBURGER MENU ===== */
+.ham-btn{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  gap:5px;width:40px;height:40px;
+  background:none;border:1px solid rgba(255,255,255,0.18);
+  cursor:pointer;padding:0;flex-shrink:0;
+  transition:border-color 0.2s;
+}
+.ham-btn:hover{border-color:var(--gold);}
+.ham-line{
+  display:block;width:18px;height:1.5px;
+  background:rgba(255,255,255,0.75);
+  transition:all 0.3s ease;transform-origin:center;
+}
+.ham-btn.open .ham-line:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.ham-btn.open .ham-line:nth-child(2){opacity:0;transform:scaleX(0);}
+.ham-btn.open .ham-line:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+/* Mobile drawer */
+#mobile-drawer{
+  display:none;
+  position:fixed;top:64px;left:0;right:0;bottom:0;z-index:190;
+}
+#mobile-drawer.open{display:block;}
+.drawer-backdrop{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.55);
+}
+.drawer-panel{
+  position:absolute;top:0;right:0;bottom:0;width:280px;
+  background:#1A1714;
+  border-left:1px solid rgba(255,255,255,0.08);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+#mobile-drawer.open .drawer-panel{transform:translateX(0);}
+.drawer-nav{
+  display:flex;flex-direction:column;
+  padding:32px 0;flex:1;
+}
+.drawer-link{
+  background:none;border:none;
+  color:rgba(255,255,255,0.6);
+  font-size:14px;letter-spacing:0.1em;
+  padding:16px 32px;cursor:pointer;
+  font-family:var(--sans);
+  text-align:left;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  transition:all 0.2s;
+  position:relative;
+}
+.drawer-link::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--gold);
+  transform:scaleY(0);transition:transform 0.2s;
+}
+.drawer-link:hover,.drawer-link.active{
+  color:var(--white);background:rgba(255,255,255,0.04);
+}
+.drawer-link:hover::before,.drawer-link.active::before{transform:scaleY(1);}
+.drawer-footer{
+  padding:24px 32px;
+  border-top:1px solid rgba(255,255,255,0.07);
+}
+.drawer-admin-btn{
+  width:100%;background:none;
+  border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.45);font-size:12px;letter-spacing:0.12em;
+  padding:10px;cursor:pointer;font-family:var(--sans);
+  transition:all 0.2s;
+}
+.drawer-admin-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  #nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .nav-admin-btn{display:none;}
+  .ham-btn{display:flex;}
+
+  /* Hero: push content up on mobile */
+  .hero-content{padding:0 0 60px 24px;}
+  .scroll-dot{display:none;}
+  .hero-h1{font-size:clamp(32px,8vw,52px);}
+  .hero-lua{gap:20px;flex-wrap:wrap;}
+  .lua-col{min-width:120px;}
+  .hero-btns{flex-wrap:wrap;}
+  .hero-right-panel{display:none;}
+
+  .spirit-split,.service-layout,.comm-layout{flex-direction:column;height:auto;}
+  .spirit-left,.service-left{width:100%;padding:48px 24px;}
+  .spirit-right,.service-right{width:100%;min-height:320px;}
+  .classic-section,.projects-grid-section{padding:40px 20px;}
+  .aura-header-content{padding:40px 20px;}
+  .ct-row{grid-template-columns:1fr;}
+  .pg-grid{grid-template-columns:1fr 1fr;}
+  .pg-card.wide{grid-column:span 2;}
+  .adm-row,.adm-row3{grid-template-columns:1fr;}
+  #page-bg-grid{grid-template-columns:1fr !important;}
+  .comm-layout{grid-template-columns:1fr;}
+  .comm-right{min-height:280px;}
+  .contact-box{padding:0 20px;}
+  .contact-deco{display:none;}
+  .brand-phil{padding:36px 24px;}
+  .adm-wrap{padding:40px 20px;}
+}
+/* ===== SITE FOOTER ===== */
+#site-footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:150;
+  height:52px;
+  display:flex;align-items:center;
+  padding:0 56px;
+  transition:background 0.4s, border-color 0.4s;
+  pointer-events:auto;
+}
+#site-footer.dark{
+  background:rgba(18,15,12,0.82);
+  border-top:1px solid rgba(255,255,255,0.07);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+#site-footer.light{
+  background:rgba(245,242,238,0.9);
+  border-top:1px solid rgba(140,123,107,0.15);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.ft-inner{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.ft-brand{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.ft-brand-dot{
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-family:var(--serif);flex-shrink:0;
+  transition:border-color 0.4s, color 0.4s;
+}
+#site-footer.dark .ft-brand-dot{border:1px solid rgba(184,151,106,0.5);color:rgba(184,151,106,0.7);}
+#site-footer.light .ft-brand-dot{border:1px solid rgba(140,123,107,0.4);color:rgba(140,123,107,0.7);}
+.ft-brand-name{
+  font-family:var(--serif);font-size:12px;letter-spacing:0.15em;
+  transition:color 0.4s;
+}
+#site-footer.dark .ft-brand-name{color:rgba(255,255,255,0.55);}
+#site-footer.light .ft-brand-name{color:rgba(60,50,40,0.65);}
+.ft-nav{
+  display:flex;align-items:center;gap:0;
+  position:absolute;left:50%;transform:translateX(-50%);
+}
+.ft-nav-link{
+  background:none;border:none;cursor:pointer;
+  font-size:10.5px;letter-spacing:0.1em;font-family:var(--sans);
+  padding:4px 14px;transition:color 0.2s;
+  position:relative;
+}
+.ft-nav-link+.ft-nav-link::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:1px;height:10px;
+}
+#site-footer.dark .ft-nav-link{color:rgba(255,255,255,0.35);}
+#site-footer.dark .ft-nav-link:hover{color:var(--gold);}
+#site-footer.dark .ft-nav-link+.ft-nav-link::before{background:rgba(255,255,255,0.12);}
+#site-footer.light .ft-nav-link{color:rgba(60,50,40,0.45);}
+#site-footer.light .ft-nav-link:hover{color:var(--gold);}
+#site-footer.light .ft-nav-link+.ft-nav-link::before{background:rgba(140,123,107,0.25);}
+.ft-copy{
+  font-size:10px;letter-spacing:0.08em;flex-shrink:0;
+  transition:color 0.4s;white-space:nowrap;
+}
+#site-footer.dark .ft-copy{color:rgba(255,255,255,0.2);}
+#site-footer.light .ft-copy{color:rgba(60,50,40,0.35);}
+
+/* Pages need bottom padding so footer doesn't cover content */
+.page{padding-bottom:52px;}
+
+@media(max-width:900px){
+  #site-footer{padding:0 20px;height:48px;}
+  .ft-nav{display:none;}
+  .ft-brand-name{font-size:11px;}
+  .ft-copy{font-size:9.5px;}
+  .page{padding-bottom:48px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav id="nav">
+  <div class="nav-logo" onclick="goPage('home')">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text" id="navBrand">AURA <span>建設</span></div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" data-page="home" onclick="goPage('home')">首頁</button>
+    <div class="nav-sep"></div>
+    <button class="nav-link" data-page="spirit" onclick="goPage('spirit')">企業精神</button>
+    <div class="nav-sep"></div>
+    <button class="nav-link" data-page="aura" onclick="goPage('aura')">預約賞屋 | AURA</button>
+    <div class="nav-sep"></div>
+    <button class="nav-link" data-page="service" onclick="goPage('service')">客戶服務</button>
+    <div class="nav-sep"></div>
+    <button class="nav-link" data-page="contact" onclick="goPage('contact')">聯絡我們</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="nav-admin-btn" onclick="openAdmin()">後台</button>
+    <button class="ham-btn" id="hamBtn" onclick="toggleDrawer()" aria-label="選單">
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== MOBILE DRAWER ===== -->
+<div id="mobile-drawer">
+  <div class="drawer-backdrop" onclick="closeDrawer()"></div>
+  <div class="drawer-panel">
+    <nav class="drawer-nav">
+      <button class="drawer-link active" data-page="home" onclick="drawerGo('home')">首頁</button>
+      <button class="drawer-link" data-page="spirit" onclick="drawerGo('spirit')">企業精神</button>
+      <button class="drawer-link" data-page="aura" onclick="drawerGo('aura')">預約賞屋 | AURA</button>
+      <button class="drawer-link" data-page="service" onclick="drawerGo('service')">客戶服務</button>
+      <button class="drawer-link" data-page="contact" onclick="drawerGo('contact')">聯絡我們</button>
+    </nav>
+    <div class="drawer-footer">
+      <button class="drawer-admin-btn" onclick="closeDrawer();openAdmin()">⚙ 後台管理</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 1: 首頁 ===== -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div class="hero-bg-fill" id="heroBgFill"></div>
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-right-panel">
+      <div class="hero-right-inner">
+        <div class="hero-arch-visual">
+          <svg class="building-svg" viewBox="0 0 260 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="80" y="20" width="100" height="380" stroke="white" stroke-width="0.8"/>
+            <rect x="90" y="30" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="55" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="80" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="105" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="130" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="155" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="180" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="205" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="230" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="255" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="280" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="305" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="330" width="80" height="15" stroke="white" stroke-width="0.4"/>
+            <rect x="90" y="355" width="80" height="50" stroke="white" stroke-width="0.6"/>
+            <line x1="40" y1="400" x2="220" y2="400" stroke="white" stroke-width="0.6"/>
+            <rect x="60" y="360" width="20" height="40" stroke="white" stroke-width="0.4"/>
+            <rect x="180" y="360" width="20" height="40" stroke="white" stroke-width="0.4"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow" id="h-eyebrow">Humanities · 人文流域 溯遠流長</div>
+      <h1 class="hero-h1">
+        <span class="en" id="h-en">LUA 企業精神</span>
+        <span id="h-title1">以真誠，</span><br>
+        造就<span class="gold" id="h-title2">家</span>的形狀
+      </h1>
+      <div class="hero-rule"></div>
+      <p class="hero-body" id="h-body">不只是建築，而是人們心中的狀態，美好的存在 AURA 影響一個城市背後的渦渦律動，話語之間、善意之間，一種地表上的人文交流，感動放入細節裡儲存的記憶。</p>
+      <div class="hero-lua">
+        <div class="lua-col">
+          <div class="lua-en">Listen</div>
+          <div class="lua-zh">傾聽</div>
+          <div class="lua-desc">Listen to your inner voice.<br>傾聽你內心的聲音。</div>
+        </div>
+        <div class="lua-col">
+          <div class="lua-en">Understand</div>
+          <div class="lua-zh">理解</div>
+          <div class="lua-desc">Understand the life you long for.<br>理解你嚮往的生活。</div>
+        </div>
+        <div class="lua-col">
+          <div class="lua-en">Act</div>
+          <div class="lua-zh">行動</div>
+          <div class="lua-desc">Act by following the way of sincerity.<br>以真誠的態度行事。</div>
+        </div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-gold" onclick="goPage('aura')">預約賞屋</button>
+        <button class="btn-outline-w" onclick="goPage('spirit')">企業精神</button>
+      </div>
+    </div>
+    <div class="scroll-dot">
+      <div class="s-line"></div>
+      <span>SCROLL</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 2: 企業精神 ===== -->
+<div class="page" id="page-spirit">
+  <div class="pbg" id="pbg-spirit"></div>
+  <div class="pov" id="pov-spirit"></div>
+  <div class="spirit-split">
+    <div class="spirit-left">
+      <div class="spirit-bg-text">LUA</div>
+      <div class="sp-eyebrow">LUA 企業精神</div>
+      <h2 class="sp-h2" id="sp-title">人文流域<br><em>溯遠流長</em></h2>
+      <div class="sp-sub">Humanities · Where Inner Light Becomes Home</div>
+      <div class="sp-rule"></div>
+      <p class="sp-body" id="sp-body">不只是建築，而是人們心中的狀態，美好的存在 AURA 影響一個城市背後的渦渦律動，話語之間、善意之間，一種地表上的人文交流，感動放入細節裡儲存的記憶，一提到 AURA，聲況的頻率、腦波，就有一種美好聯想。</p>
+      <div class="lua-blocks">
+        <div class="lua-block">
+          <div>
+            <div class="lb-en">Listen</div>
+            <div class="lb-zh">傾聽</div>
+          </div>
+          <div>
+            <div class="lb-desc">Listen to your inner voice.<br>傾聽你內心的聲音。</div>
+          </div>
+        </div>
+        <div class="lua-block">
+          <div>
+            <div class="lb-en">Understand</div>
+            <div class="lb-zh">理解</div>
+          </div>
+          <div>
+            <div class="lb-desc">Understand the life you long for.<br>理解你嚮往的生活。</div>
+          </div>
+        </div>
+        <div class="lua-block">
+          <div>
+            <div class="lb-en">Act</div>
+            <div class="lb-zh">行動</div>
+          </div>
+          <div>
+            <div class="lb-desc">Act by following the way of sincerity.<br>以真誠的態度行事。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="spirit-right">
+      <div class="spirit-visual"></div>
+      <!-- Spirit sub-tabs top area -->
+      <div style="padding-top:24px;padding-left:24px;padding-right:24px;position:relative;z-index:2;">
+        <div class="svc-sub-tabs" style="position:relative;top:auto;background:rgba(26,23,20,0.5);border-bottom:1px solid rgba(255,255,255,0.1);">
+          <button class="svc-stab active" onclick="switchSpiritTab('brand',this)">品牌理念</button>
+          <button class="svc-stab" onclick="switchSpiritTab('after',this)">售後服務</button>
+        </div>
+      </div>
+      <div class="spirit-panel active" id="sp-panel-brand">
+        <div class="brand-phil">
+          <div class="sp-eyebrow" style="margin-bottom:20px;">BRAND PHILOSOPHY</div>
+          <div class="spirit-quote" id="sp-quote">光隨著時間的微小浪波閃動，<br>就像<em>月光</em>，永遠都在。</div>
+          <div class="spirit-attr">Light shimmers through time's gentle ripples, forming an unseen river of happiness — like moonlight, always there.</div>
+        </div>
+      </div>
+      <div class="spirit-panel" id="sp-panel-after">
+        <div class="brand-phil">
+          <div class="sp-eyebrow" style="margin-bottom:20px;">Perfectly State</div>
+          <div class="spirit-quote">最理想的<em>售後服務</em></div>
+          <div class="bp-body" style="margin-top:16px;" id="sp-after-body">虔誠的恭敬地呈現，每一個建築作品的完成度，預前工序以及反覆驗工，將售後的問題降到最低最低，高度要求「預先」免除住戶對購屋前後，各項目的擔憂。我們衷心希望最理想的售後服務：「沒有問題，來喝咖啡，就好。」</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 3: 預約賞屋 AURA ===== -->
+<div class="page" id="page-aura">
+  <div class="pbg" id="pbg-aura"></div>
+  <div class="pov" id="pov-aura"></div>
+  <div class="aura-header">
+    <div class="aura-header-bg"></div>
+    <div class="aura-header-content">
+      <div class="aura-hd-en">CLASSIC · WHERE INNER LIGHT BECOMES HOME</div>
+      <div class="aura-hd-title">預約賞屋 <span style="color:var(--gold);font-size:0.6em;vertical-align:middle;letter-spacing:0.15em;">| AURA</span></div>
+      <div class="aura-hd-sub">每一棟建築，都是我們對生活的承諾與實踐</div>
+    </div>
+  </div>
+
+  <div class="classic-section">
+    <div class="cl-head">CLASSIC</div>
+    <div class="cl-title">建案歷程</div>
+    <div class="cl-sub">WHERE INNER LIGHT BECOMES HOME</div>
+    <div class="timeline-scroll">
+      <div class="timeline-row" id="timelineRow"></div>
+    </div>
+  </div>
+
+  <div class="projects-grid-section">
+    <div class="pg-header">
+      <div>
+        <div class="pg-label">AURA · 精選建案</div>
+        <div class="pg-title">所有建案</div>
+      </div>
+      <button class="btn-gold" onclick="goPage('contact')" style="font-size:12px;padding:11px 28px;">預約賞屋</button>
+    </div>
+    <div class="pg-grid" id="pgGrid"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE 4: 客戶服務 ===== -->
+<div class="page" id="page-service">
+  <div class="pbg" id="pbg-service"></div>
+  <div class="pov" id="pov-service"></div>
+  <!-- Sub tab selector -->
+  <div style="padding-top:64px;background:var(--ink);">
+    <div class="svc-sub-tabs" style="position:sticky;top:64px;background:rgba(26,23,20,0.95);">
+      <button class="svc-stab active" onclick="switchSvcTab('perfectly',this)">最理想的售後服務</button>
+      <button class="svc-stab" onclick="switchSvcTab('community',this)">社區活動</button>
+    </div>
+  </div>
+
+  <div id="svc-panel-perfectly" style="background:var(--ink);">
+    <div class="service-layout" style="padding-top:0;height:calc(100vh - 114px);">
+      <div class="service-left">
+        <div class="svc-visual"></div>
+        <div style="position:relative;z-index:1;">
+          <div class="svc-eyebrow">Perfectly State</div>
+          <div class="svc-sub-en">最理想的售後服務</div>
+          <h2 class="svc-title" id="svc-title">最理想的<br>售後服務</h2>
+          <div class="svc-rule"></div>
+          <p class="svc-intro" id="svc-intro">虔誠的恭敬地呈現，每一個建築作品的完成度，預前工序以及反覆驗工，將售後的問題降到最低最低，高度要求「預先」免除住戶對購屋前後，各項目的擔憂。</p>
+          <div class="svc-blocks">
+            <div class="svc-block">
+              <h4>只需。來喝咖啡，就好</h4>
+              <p>我們衷心希望最理想的售後服務：「沒有問題，來喝咖啡，就好。」代表一路做到更緊密的覺察，更謹慎的達成率，更瘋狂的承擔實力。</p>
+            </div>
+            <div class="svc-block">
+              <h4>絮絮生活，美好分享</h4>
+              <p>讓 AURA 的企業會館，留下浸潤生活的美好交流，專注賦予服務的對待內涵，在竹北，留一處，我們都在，只要你有空，約來，只需享受喝杯好咖啡，無需任何煩惱。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="service-right">
+        <div class="svc-right-visual"></div>
+        <div class="svc-right-content">
+          <div class="svc-coffee">
+            <div class="coffee-mark">☕</div>
+            <div>
+              <div class="coffee-q">「沒有問題，<br>來喝咖啡，就好。」</div>
+              <p class="coffee-p">在竹北，留一處，我們都在，只要你有空，約來，只需享受喝杯好咖啡，無需任何煩惱。讓 AURA 的企業會館，留下浸潤生活的美好交流，專注賦予服務的對待內涵。</p>
+            </div>
+          </div>
+          <div class="svc-brand-note">
+            <div class="svc-brand-icon">B<br>P</div>
+            <div class="svc-brand-text">BRAND PHILOSOPHY</div>
+            <div style="margin-left:auto;font-size:11px;color:rgba(255,255,255,0.2);">Light shimmers through time's gentle ripples</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="svc-panel-community" style="display:none;">
+    <div class="comm-layout" style="min-height:calc(100vh - 114px);">
+      <div class="comm-left">
+        <div class="comm-eyebrow">COMMUNITY</div>
+        <h2 class="comm-h2">社區活動</h2>
+        <div class="comm-block">
+          <h3>時間，是最好的陪伴</h3>
+          <div class="comm-rule"></div>
+          <p id="comm-body1">淡淡文字寫給時間，彷彿如忠實的月光，照應每一個住戶的心，透亮著溫柔的心性，感染社區的凝聚力，用緩慢節奏的美學旋律，與時間共舞，一起歡笑、一起珍惜。</p>
+        </div>
+        <div class="comm-block">
+          <h3>一切，只為很高興認識你們</h3>
+          <div class="comm-rule"></div>
+          <p id="comm-body2">AURA 家族的核心團隊，喜歡一起討論社區「入厝」活動，細心地找尋適合活動的主題、禮物、餐點、場域的氛圍、動線…為了周全，同時夥伴們還親自參加很多建案的活動心得，提出分享。</p>
+        </div>
+        <div class="comm-tabs">
+          <button class="ctab active" onclick="switchCommTab('c1',this)">一緒活動</button>
+          <button class="ctab" onclick="switchCommTab('c2',this)">源源活動</button>
+        </div>
+      </div>
+      <div class="comm-right">
+        <div id="comm-mosaic-c1" class="comm-mosaic">
+          <div class="mosaic-tile tall">🥮</div>
+          <div class="mosaic-tile">👥</div>
+          <div class="mosaic-tile">🎪</div>
+        </div>
+        <div id="comm-mosaic-c2" class="comm-mosaic" style="display:none;">
+          <div class="mosaic-tile tall">🎄</div>
+          <div class="mosaic-tile">🛍️</div>
+          <div class="mosaic-tile">🍷</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 5: 聯絡我們 ===== -->
+<div class="page" id="page-contact">
+  <div class="pbg" id="pbg-contact"></div>
+  <div class="pov" id="pov-contact"></div>
+  <div class="contact-hero">
+    <div class="contact-bg"></div>
+    <div class="contact-bg-lines"></div>
+    <div class="contact-deco">
+      <div class="contact-deco-inner">AURA</div>
+    </div>
+    <div class="contact-box">
+      <div class="contact-head">
+        <div class="ct-eyebrow">LIVE FOREVER</div>
+        <div class="ct-title">線上留言</div>
+        <div class="ct-note">* 為必填 &nbsp;·&nbsp; 我們將於 2 個工作日內與您聯繫</div>
+      </div>
+      <div class="ct-form">
+        <div class="ct-row">
+          <div class="ct-field">
+            <label><span class="req">* </span>姓　名</label>
+            <input type="text" id="f-name" placeholder="請輸入姓名">
+          </div>
+          <div class="ct-field">
+            <label><span class="req">* </span>聯絡電話</label>
+            <input type="tel" id="f-phone" placeholder="請輸入電話">
+          </div>
+        </div>
+        <div class="ct-field" style="margin-bottom:18px;">
+          <label>電子信箱</label>
+          <input type="email" id="f-email" placeholder="請輸入 Email（選填）">
+        </div>
+        <div class="ct-row">
+          <div class="ct-field">
+            <label><span class="req">* </span>留言類別</label>
+            <select id="f-type">
+              <option value="">請選擇分類</option>
+              <option>預約賞屋</option>
+              <option>購屋諮詢</option>
+              <option>售後服務</option>
+              <option>社區活動</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="ct-field">
+            <label>建案名稱</label>
+            <select id="f-project">
+              <option value="">請選擇建案</option>
+            </select>
+          </div>
+        </div>
+        <div class="ct-field" style="margin-top:18px;margin-bottom:0;">
+          <label><span class="req">* </span>留言內容</label>
+          <textarea id="f-msg" placeholder="請輸入留言內容"></textarea>
+        </div>
+        <div class="ct-bottom">
+          <div class="ct-agree">點選送出即表示您同意<br><a href="#">個人資料運用聲明</a></div>
+          <button class="ct-submit" onclick="submitMsg()">✉ 送出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SITE FOOTER ===== -->
+<footer id="site-footer" class="dark">
+  <div class="ft-inner">
+    <div class="ft-brand">
+      <div class="ft-brand-dot">A</div>
+      <div class="ft-brand-name" id="ftBrandName">AURA 建設</div>
+    </div>
+    <nav class="ft-nav">
+      <button class="ft-nav-link" onclick="goPage('home')">首頁</button>
+      <button class="ft-nav-link" onclick="goPage('spirit')">企業精神</button>
+      <button class="ft-nav-link" onclick="goPage('aura')">預約賞屋</button>
+      <button class="ft-nav-link" onclick="goPage('service')">客戶服務</button>
+      <button class="ft-nav-link" onclick="goPage('contact')">聯絡我們</button>
+    </nav>
+    <div class="ft-copy">© 2026 AURA 建設．All Rights Reserved</div>
+  </div>
+</footer>
+
+<!-- ===== ADMIN OVERLAY ===== -->
+<div id="admin-overlay">
+  <div class="adm-wrap">
+    <div class="adm-header">
+      <div class="adm-title">⚙ 後台管理</div>
+      <button class="adm-close-btn" onclick="closeAdmin()">✕ 關閉</button>
+    </div>
+    <!-- Login -->
+    <div id="adm-login">
+      <div class="adm-login">
+        <h3>管理員登入</h3>
+        <p>請輸入密碼以進入後台</p>
+        <input type="password" class="adm-input" id="adm-pw" placeholder="密碼">
+        <button class="adm-btn" style="width:100%;" onclick="doAdmLogin()">登入</button>
+        <div class="adm-err" id="adm-err">密碼錯誤，請再試一次</div>
+        <div class="adm-hint">預設密碼：admin2025</div>
+      </div>
+    </div>
+    <!-- Main -->
+    <div id="adm-main" style="display:none;">
+      <div class="adm-notice" id="admNotice">✓ 儲存成功</div>
+      <div class="adm-tabs">
+        <button class="adm-tab active" onclick="switchAdmTab('projects',this)">建案管理</button>
+        <button class="adm-tab" onclick="switchAdmTab('site',this)">網站文字</button>
+        <button class="adm-tab" onclick="switchAdmTab('msgs',this)">留言信箱</button>
+      </div>
+
+      <!-- Panel: projects -->
+      <div class="adm-panel active" id="adm-panel-projects">
+        <div class="adm-section">新增建案</div>
+        <div class="adm-row3">
+          <div class="adm-field"><label>建案名稱</label><input id="np-name" placeholder="月河 MOON RIVER"></div>
+          <div class="adm-field"><label>完工年份</label><input id="np-year" placeholder="2025"></div>
+          <div class="adm-field"><label>類型說明</label><input id="np-type" placeholder="豪華住宅 · 18層"></div>
+        </div>
+        <div class="adm-row">
+          <div class="adm-field">
+            <label>建案封面圖片</label>
+            <div class="img-upload-zone" id="np-upload-zone" onclick="document.getElementById('np-img-input').click()">
+              <input type="file" id="np-img-input" accept="image/*" style="display:none" onchange="previewNewImg(this)">
+              <div id="np-img-preview" class="img-preview-empty">
+                <div class="img-upload-icon">↑</div>
+                <div class="img-upload-hint">點擊上傳圖片<br><span>JPG / PNG / WEBP · 建議 800×600 以上</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="adm-field"><label>狀態</label>
+            <select id="np-status">
+              <option value="presale">預售中</option>
+              <option value="ready">即將完工</option>
+              <option value="done">已完工</option>
+            </select>
+          </div>
+        </div>
+        <button class="adm-btn" onclick="addProject()">＋ 新增建案</button>
+        <div class="adm-plist" id="adm-plist"></div>
+      </div>
+
+      <!-- Panel: site text -->
+      <div class="adm-panel" id="adm-panel-site">
+        <div class="adm-section">首頁背景圖片</div>
+        <div class="adm-field">
+          <label>首頁主視覺底圖</label>
+          <div class="img-upload-zone" id="hero-upload-zone" onclick="document.getElementById('hero-img-input').click()" style="min-height:180px;">
+            <input type="file" id="hero-img-input" accept="image/*" style="display:none" onchange="previewHeroImg(this)">
+            <div id="hero-img-preview" class="img-preview-empty">
+              <div class="img-upload-icon">↑</div>
+              <div class="img-upload-hint">點擊上傳首頁底圖<br><span>建議 1920×1080 以上寬螢幕橫向圖片</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="adm-field" id="hero-opacity-field" style="display:none;">
+          <label>圖片遮罩深度 &nbsp;<span id="hero-opacity-val" style="color:var(--gold);">70%</span>&nbsp;（數值越高文字越清晰）</label>
+          <input type="range" id="hero-opacity" min="30" max="95" value="70" step="5"
+            oninput="document.getElementById('hero-opacity-val').textContent=this.value+'%';applyHeroBg();showGlobalBg('home');"
+            style="width:100%;margin-top:6px;accent-color:var(--gold);">
+        </div>
+        <div class="adm-hr"></div>
+        <div class="adm-section">首頁文字</div>
+        <div class="adm-row">
+          <div class="adm-field"><label>公司/品牌名稱</label><input id="st-brand"></div>
+          <div class="adm-field"><label>首頁副標（英文）</label><input id="st-eyebrow"></div>
+        </div>
+        <div class="adm-field"><label>首頁主標題</label><input id="st-h1"></div>
+        <div class="adm-field"><label>首頁介紹文字</label><textarea id="st-body"></textarea></div>
+        <div class="adm-hr"></div>
+        <div class="adm-section">企業精神</div>
+        <div class="adm-field"><label>企業精神標題</label><input id="st-sp-title"></div>
+        <div class="adm-field"><label>企業精神說明</label><textarea id="st-sp-body"></textarea></div>
+        <div class="adm-field"><label>品牌名言</label><input id="st-sp-quote"></div>
+        <div class="adm-hr"></div>
+        <div class="adm-section">客戶服務</div>
+        <div class="adm-field"><label>售後服務標題</label><input id="st-svc-title"></div>
+        <div class="adm-field"><label>售後服務說明</label><textarea id="st-svc-intro"></textarea></div>
+        <div class="adm-hr"></div>
+        <div class="adm-section">社區活動</div>
+        <div class="adm-field"><label>時間是最好的陪伴（說明）</label><textarea id="st-comm1"></textarea></div>
+        <div class="adm-field"><label>一切，只為很高興認識你們（說明）</label><textarea id="st-comm2"></textarea></div>
+        <div class="adm-hr"></div>
+        <div class="adm-section">各頁面背景圖片</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="page-bg-grid">
+          <!-- spirit -->
+          <div class="adm-field">
+            <label>企業精神 · 背景圖</label>
+            <div class="img-upload-zone page-bg-zone" id="pz-spirit" onclick="triggerPageBgUpload('spirit')" style="min-height:110px;">
+              <input type="file" id="pi-spirit" accept="image/*" style="display:none" onchange="uploadPageBg('spirit',this)">
+              <div class="img-preview-empty"><div class="img-upload-icon">↑</div><div class="img-upload-hint" style="font-size:11px;">點擊上傳</div></div>
+            </div>
+            <div class="page-bg-opacity-row" id="por-spirit" style="display:none;margin-top:8px;">
+              <label style="font-size:10px;color:rgba(255,255,255,0.4);">遮罩深度 <span id="pov-spirit" style="color:var(--gold);">70%</span></label>
+              <input type="range" min="20" max="95" value="70" step="5" style="width:100%;accent-color:var(--gold);" oninput="updatePageBgOpacity('spirit',this.value)">
+            </div>
+          </div>
+          <!-- aura -->
+          <div class="adm-field">
+            <label>預約賞屋 AURA · 背景圖</label>
+            <div class="img-upload-zone page-bg-zone" id="pz-aura" onclick="triggerPageBgUpload('aura')" style="min-height:110px;">
+              <input type="file" id="pi-aura" accept="image/*" style="display:none" onchange="uploadPageBg('aura',this)">
+              <div class="img-preview-empty"><div class="img-upload-icon">↑</div><div class="img-upload-hint" style="font-size:11px;">點擊上傳</div></div>
+            </div>
+            <div class="page-bg-opacity-row" id="por-aura" style="display:none;margin-top:8px;">
+              <label style="font-size:10px;color:rgba(255,255,255,0.4);">遮罩深度 <span id="pov-aura" style="color:var(--gold);">70%</span></label>
+              <input type="range" min="20" max="95" value="70" step="5" style="width:100%;accent-color:var(--gold);" oninput="updatePageBgOpacity('aura',this.value)">
+            </div>
+          </div>
+          <!-- service -->
+          <div class="adm-field">
+            <label>客戶服務 · 背景圖</label>
+            <div class="img-upload-zone page-bg-zone" id="pz-service" onclick="triggerPageBgUpload('service')" style="min-height:110px;">
+              <input type="file" id="pi-service" accept="image/*" style="display:none" onchange="uploadPageBg('service',this)">
+              <div class="img-preview-empty"><div class="img-upload-icon">↑</div><div class="img-upload-hint" style="font-size:11px;">點擊上傳</div></div>
+            </div>
+            <div class="page-bg-opacity-row" id="por-service" style="display:none;margin-top:8px;">
+              <label style="font-size:10px;color:rgba(255,255,255,0.4);">遮罩深度 <span id="pov-service" style="color:var(--gold);">70%</span></label>
+              <input type="range" min="20" max="95" value="70" step="5" style="width:100%;accent-color:var(--gold);" oninput="updatePageBgOpacity('service',this.value)">
+            </div>
+          </div>
+          <!-- contact -->
+          <div class="adm-field">
+            <label>聯絡我們 · 背景圖</label>
+            <div class="img-upload-zone page-bg-zone" id="pz-contact" onclick="triggerPageBgUpload('contact')" style="min-height:110px;">
+              <input type="file" id="pi-contact" accept="image/*" style="display:none" onchange="uploadPageBg('contact',this)">
+              <div class="img-preview-empty"><div class="img-upload-icon">↑</div><div class="img-upload-hint" style="font-size:11px;">點擊上傳</div></div>
+            </div>
+            <div class="page-bg-opacity-row" id="por-contact" style="display:none;margin-top:8px;">
+              <label style="font-size:10px;color:rgba(255,255,255,0.4);">遮罩深度 <span id="pov-contact" style="color:var(--gold);">70%</span></label>
+              <input type="range" min="20" max="95" value="70" step="5" style="width:100%;accent-color:var(--gold);" oninput="updatePageBgOpacity('contact',this.value)">
+            </div>
+          </div>
+        </div>
+        <button class="adm-btn" onclick="saveSite()">儲存文字設定</button>
+      </div>
+
+      <!-- Panel: messages -->
+      <div class="adm-panel" id="adm-panel-msgs">
+        <div class="adm-section">收到的留言</div>
+        <div class="adm-msgs" id="adm-msgs"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA STORE =====
+let D = JSON.parse(localStorage.getItem('aura_site') || 'null') || {
+  pw: 'admin2025',
+  site: {
+    brand: 'AURA 建設',
+    eyebrow: 'Humanities · 人文流域 溯遠流長',
+    h1: '以真誠，造就家的形狀',
+    body: '不只是建築，而是人們心中的狀態，美好的存在 AURA 影響一個城市背後的渦渦律動，話語之間、善意之間，一種地表上的人文交流，感動放入細節裡儲存的記憶。',
+    spTitle: '人文流域\n溯遠流長',
+    spBody: '不只是建築，而是人們心中的狀態，美好的存在 AURA 影響一個城市背後的渦渦律動，話語之間、善意之間，一種地表上的人文交流，感動放入細節裡儲存的記憶，一提到 AURA，聲況的頻率、腦波，就有一種美好聯想。',
+    spQuote: '光隨著時間的微小浪波閃動，就像月光，永遠都在。',
+    svcTitle: '最理想的\n售後服務',
+    svcIntro: '虔誠的恭敬地呈現，每一個建築作品的完成度，預前工序以及反覆驗工，將售後的問題降到最低最低，高度要求「預先」免除住戶對購屋前後，各項目的擔憂。',
+    comm1: '淡淡文字寫給時間，彷彿如忠實的月光，照應每一個住戶的心，透亮著溫柔的心性，感染社區的凝聚力，用緩慢節奏的美學旋律，與時間共舞，一起歡笑、一起珍惜。',
+    comm2: 'AURA 家族的核心團隊，喜歡一起討論社區「入厝」活動，細心地找尋適合活動的主題、禮物、餐點、場域的氛圍、動線…為了周全，同時夥伴們還親自參加很多建案的活動心得，提出分享。'
+  },
+  projects: [
+    {id:1,name:'之山林',year:'2015',type:'住宅大樓',emoji:'🏙️',status:'done'},
+    {id:2,name:'合石樂學',year:'2016',type:'住宅社區',emoji:'🌳',status:'done'},
+    {id:3,name:'一緒',year:'2018',type:'精品住宅',emoji:'🏢',status:'done'},
+    {id:4,name:'源源',year:'2019',type:'複合住宅',emoji:'🌿',status:'done'},
+    {id:5,name:'合石如沐',year:'2020',type:'豪華住宅',emoji:'✨',status:'done'},
+    {id:6,name:'合石如馥',year:'2021',type:'精品住宅',emoji:'🌸',status:'done'},
+    {id:7,name:'OURS',year:'2023',type:'豪宅',emoji:'🏛️',status:'done'},
+    {id:8,name:'MOON RIVER',year:'2024',type:'河岸豪宅',emoji:'🌙',status:'presale'},
+  ],
+  messages: [
+    {id:1,name:'王小明',phone:'0912-000-001',email:'',type:'預約賞屋',project:'MOON RIVER',msg:'請問 MOON RIVER 目前可以預約賞屋嗎？想了解戶型與售價。',time:'2025-06-20 14:32',read:false},
+    {id:2,name:'李美玲',phone:'0923-000-002',email:'li@gmail.com',type:'售後服務',project:'OURS',msg:'入住後發現廚房排水稍慢，請問如何申請維修？',time:'2025-06-18 10:15',read:true},
+  ]
+};
+function saveD(){localStorage.setItem('aura_site',JSON.stringify(D));}
+
+// ===== HAMBURGER DRAWER =====
+function toggleDrawer(){
+  const d=document.getElementById('mobile-drawer');
+  const b=document.getElementById('hamBtn');
+  const isOpen=d.classList.contains('open');
+  if(isOpen){closeDrawer();}else{d.classList.add('open');b.classList.add('open');}
+}
+function closeDrawer(){
+  document.getElementById('mobile-drawer').classList.remove('open');
+  document.getElementById('hamBtn').classList.remove('open');
+}
+function drawerGo(id){
+  goPage(id);
+  closeDrawer();
+  // sync drawer active state
+  document.querySelectorAll('.drawer-link').forEach(l=>{
+    l.classList.toggle('active',l.dataset.page===id);
+  });
+}
+
+// ===== PAGE ROUTING =====
+// ===== FOOTER THEME =====
+// dark pages: home, spirit, service, contact  |  light pages: aura
+const darkPages = new Set(['home','spirit','service','contact']);
+function updateFooterTheme(pageId){
+  const f=document.getElementById('site-footer');
+  f.className = darkPages.has(pageId) ? 'dark' : 'light';
+}
+
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('page-'+id).scrollTop=0;
+  const btn=document.querySelector(`.nav-link[data-page="${id}"]`);
+  if(btn)btn.classList.add('active');
+  // sync drawer
+  document.querySelectorAll('.drawer-link').forEach(l=>{
+    l.classList.toggle('active',l.dataset.page===id);
+  });
+  updateFooterTheme(id);
+}
+
+// ===== TAB SWITCHES =====
+function switchSpiritTab(tab,el){
+  document.querySelectorAll('#page-spirit .svc-stab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sp-panel-brand').style.display=tab==='brand'?'block':'none';
+  document.getElementById('sp-panel-after').style.display=tab==='after'?'block':'none';
+}
+function switchSvcTab(tab,el){
+  document.querySelectorAll('#page-service .svc-stab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('svc-panel-perfectly').style.display=tab==='perfectly'?'block':'none';
+  document.getElementById('svc-panel-community').style.display=tab==='community'?'block':'none';
+}
+function switchCommTab(id,el){
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('comm-mosaic-c1').style.display='none';
+  document.getElementById('comm-mosaic-c2').style.display='none';
+  document.getElementById('comm-mosaic-'+id).style.display='grid';
+}
+
+// ===== RENDER SITE =====
+function renderSite(){
+  const s=D.site;
+  // Nav brand
+  const parts=s.brand.split(' ');
+  document.getElementById('navBrand').innerHTML=parts[0]+' <span>'+parts.slice(1).join(' ')+'</span>';
+  document.title=s.brand;
+  // Footer brand
+  document.getElementById('ftBrandName').textContent=s.brand;
+  // Home
+  document.getElementById('h-eyebrow').textContent=s.eyebrow;
+  document.getElementById('h-body').textContent=s.body;
+  // Spirit
+  const spT=s.spTitle.split('\n');
+  document.getElementById('sp-title').innerHTML=spT[0]+(spT[1]?'<br><em>'+spT[1]+'</em>':'');
+  document.getElementById('sp-body').textContent=s.spBody;
+  const q=s.spQuote.replace('月光','<em>月光</em>');
+  document.getElementById('sp-quote').innerHTML=q;
+  // Service
+  document.getElementById('svc-intro').textContent=s.svcIntro;
+  document.getElementById('sp-after-body').textContent=s.svcIntro;
+  // Community
+  document.getElementById('comm-body1').textContent=s.comm1;
+  document.getElementById('comm-body2').textContent=s.comm2;
+  // Projects
+  renderTimeline();renderGrid();renderContactSelect();
+  // Hero bg
+  if(D.site.heroBg) applyHeroBg();
+  // Other pages bg
+  applyAllPageBgs();
+  PAGE_IDS.forEach(pid=>showGlobalBg(pid));
+  // home bg handled separately by applyHeroBg()
+}
+
+function renderTimeline(){
+  const row=document.getElementById('timelineRow');
+  row.innerHTML=D.projects.map(p=>{
+    const bg=p.img
+      ? `style="background-image:url('${p.img}');background-size:cover;background-position:center;"`
+      : `style="background:linear-gradient(135deg,#C4B8A8,#8C7B6B);"`;
+    const inner=p.img?'':`<span style="font-size:36px;color:rgba(255,255,255,0.25)">${p.emoji||'🏢'}</span>`;
+    return `<div class="tl-item">
+      <div class="tl-photo" ${bg}>
+        ${inner}
+        <div class="tl-overlay"><div class="tl-pname">${p.name}</div></div>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-year">${p.year}</div>
+      <div class="tl-name">${p.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderGrid(){
+  const g=document.getElementById('pgGrid');
+  g.innerHTML=D.projects.map((p,i)=>{
+    const bgStyle=p.img
+      ? `background-image:url('${p.img}');background-size:cover;background-position:center;`
+      : `background:linear-gradient(135deg,#C4B8A8,#8C7B6B);`;
+    const inner=p.img?'':`<div class="pg-card-bg" style="font-size:${i===0?'72px':'44px'}">${p.emoji||'🏢'}</div>`;
+    return `<div class="pg-card${i===0?' wide':''}" style="${bgStyle}">
+      ${inner}
+      <div class="pg-card-overlay">
+        <div class="pgc-year">${p.year}${p.status==='presale'?' · <span style="color:#F0C060;">預售中</span>':''}</div>
+        <div class="pgc-name">${p.name}</div>
+        <div class="pgc-type">${p.type}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderContactSelect(){
+  const s=document.getElementById('f-project');
+  s.innerHTML='<option value="">請選擇建案</option>'+
+    D.projects.map(p=>`<option>${p.name}</option>`).join('');
+}
+
+// ===== CONTACT FORM =====
+function submitMsg(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const type=document.getElementById('f-type').value;
+  const msg=document.getElementById('f-msg').value.trim();
+  if(!name||!phone||!type||!msg){alert('請填寫必填欄位（* 標示）');return;}
+  D.messages.unshift({
+    id:Date.now(),name,phone,
+    email:document.getElementById('f-email').value,
+    type,project:document.getElementById('f-project').value,
+    msg,time:new Date().toLocaleString('zh-TW'),read:false
+  });
+  saveD();
+  alert('留言已送出，感謝您！我們將盡快與您聯繫。');
+  ['f-name','f-phone','f-email','f-msg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-type').value='';
+  document.getElementById('f-project').value='';
+}
+
+// ===== ADMIN =====
+function openAdmin(){
+  document.getElementById('admin-overlay').classList.add('open');
+  document.getElementById('site-footer').style.display='none';
+}
+function closeAdmin(){
+  document.getElementById('admin-overlay').classList.remove('open');
+  document.getElementById('site-footer').style.display='';
+}
+document.getElementById('adm-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doAdmLogin();});
+function doAdmLogin(){
+  if(document.getElementById('adm-pw').value===D.pw){
+    document.getElementById('adm-login').style.display='none';
+    document.getElementById('adm-main').style.display='block';
+    loadAdmData();
+  } else {
+    document.getElementById('adm-err').style.display='block';
+  }
+}
+
+function loadAdmData(){
+  const s=D.site;
+  document.getElementById('st-brand').value=s.brand;
+  document.getElementById('st-eyebrow').value=s.eyebrow;
+  document.getElementById('st-h1').value=s.h1;
+  document.getElementById('st-body').value=s.body;
+  document.getElementById('st-sp-title').value=s.spTitle;
+  document.getElementById('st-sp-body').value=s.spBody;
+  document.getElementById('st-sp-quote').value=s.spQuote;
+  document.getElementById('st-svc-title').value=s.svcTitle;
+  document.getElementById('st-svc-intro').value=s.svcIntro;
+  document.getElementById('st-comm1').value=s.comm1;
+  document.getElementById('st-comm2').value=s.comm2;
+  renderAdmProjects();renderAdmMsgs();
+  // Hero bg
+  renderHeroUploadZone();
+  if(D.site.heroOpacity){
+    document.getElementById('hero-opacity').value=D.site.heroOpacity;
+    document.getElementById('hero-opacity-val').textContent=D.site.heroOpacity+'%';
+  }
+  // Other pages bg
+  PAGE_IDS.forEach(pid=>renderPageBgZone(pid));
+}
+
+function switchAdmTab(name,el){
+  document.querySelectorAll('.adm-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.adm-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('adm-panel-'+name).classList.add('active');
+}
+
+// ===== HERO BG IMAGE =====
+function previewHeroImg(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(file.size>8*1024*1024){alert('圖片請勿超過 8MB');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    D.site.heroBg=e.target.result;
+    D.site.heroOpacity=D.site.heroOpacity||70;
+    saveD();
+    applyHeroBg();
+    renderHeroUploadZone();
+    document.getElementById('hero-opacity-field').style.display='block';
+    document.getElementById('hero-opacity').value=D.site.heroOpacity;
+    document.getElementById('hero-opacity-val').textContent=D.site.heroOpacity+'%';
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyHeroBg(){
+  const el=document.getElementById('heroBgFill');
+  const overlay=document.querySelector('.hero-bg-overlay');
+  const opacity=parseInt(document.getElementById('hero-opacity')?.value||D.site.heroOpacity||70)/100;
+  if(D.site.heroBg){
+    el.style.backgroundImage=`url('${D.site.heroBg}')`;
+    el.style.backgroundSize='cover';
+    el.style.backgroundPosition='center';
+    overlay.style.background=`linear-gradient(130deg,rgba(10,8,6,${Math.min(opacity+0.1,1)}) 0%,rgba(20,17,12,${opacity*0.85}) 50%,rgba(10,8,6,${opacity}) 100%)`;
+    // Save opacity
+    D.site.heroOpacity=parseInt(document.getElementById('hero-opacity')?.value||70);
+    saveD();
+  } else {
+    el.style.backgroundImage='';
+    overlay.style.background='';
+  }
+}
+
+function removeHeroBg(){
+  D.site.heroBg=null;
+  saveD();
+  document.getElementById('heroBgFill').style.backgroundImage='';
+  document.querySelector('.hero-bg-overlay').style.background='';
+  renderHeroUploadZone();
+  document.getElementById('hero-opacity-field').style.display='none';
+}
+
+function renderHeroUploadZone(){
+  const zone=document.getElementById('hero-upload-zone');
+  if(!zone)return;
+  if(D.site.heroBg){
+    zone.innerHTML=`
+      <input type="file" id="hero-img-input" accept="image/*" style="display:none" onchange="previewHeroImg(this)">
+      <img src="${D.site.heroBg}" style="width:100%;height:180px;object-fit:cover;object-position:center;display:block;pointer-events:none;">
+      <button class="img-change-btn" onclick="event.stopPropagation();document.getElementById('hero-img-input').click()">更換圖片</button>
+      <button class="img-change-btn" style="right:80px;" onclick="event.stopPropagation();removeHeroBg()">移除底圖</button>`;
+    zone.onclick=()=>{};
+    document.getElementById('hero-opacity-field').style.display='block';
+  } else {
+    zone.innerHTML=`
+      <input type="file" id="hero-img-input" accept="image/*" style="display:none" onchange="previewHeroImg(this)">
+      <div class="img-preview-empty">
+        <div class="img-upload-icon">↑</div>
+        <div class="img-upload-hint">點擊上傳首頁底圖<br><span>建議 1920×1080 以上寬螢幕橫向圖片</span></div>
+      </div>`;
+    zone.onclick=()=>document.getElementById('hero-img-input').click();
+    document.getElementById('hero-opacity-field').style.display='none';
+  }
+}
+
+// ===== OTHER PAGES BG IMAGE SYSTEM =====
+const PAGE_IDS = ['spirit','aura','service','contact'];
+
+function triggerPageBgUpload(pid){
+  document.getElementById('pi-'+pid).click();
+}
+
+function uploadPageBg(pid, input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(file.size>8*1024*1024){alert('圖片請勿超過 8MB');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    if(!D.site.pageBgs) D.site.pageBgs={};
+    D.site.pageBgs[pid]={img:e.target.result, opacity:70};
+    saveD();
+    applyPageBg(pid);
+    showGlobalBg(pid);
+    renderPageBgZone(pid);
+  };
+  reader.readAsDataURL(file);
+}
+
+function updatePageBgOpacity(pid, val){
+  document.getElementById('pov-'+pid).textContent=val+'%';
+  if(!D.site.pageBgs||!D.site.pageBgs[pid])return;
+  D.site.pageBgs[pid].opacity=parseInt(val);
+  saveD();
+  applyPageBg(pid);
+  showGlobalBg(pid);
+}
+
+function applyPageBg(pid){
+  const page=document.getElementById('page-'+pid);
+  const data=D.site.pageBgs&&D.site.pageBgs[pid];
+  if(data&&data.img){ page.classList.add('has-bg'); }
+  else { page.classList.remove('has-bg'); }
+}
+
+function removePageBg(pid){
+  if(D.site.pageBgs) D.site.pageBgs[pid]=null;
+  saveD();
+  applyPageBg(pid);
+  // always refresh global bg (user may be on this page)
+  showGlobalBg(pid);
+  renderPageBgZone(pid);
+}
+
+function renderPageBgZone(pid){
+  const zone=document.getElementById('pz-'+pid);
+  const por=document.getElementById('por-'+pid);
+  if(!zone)return;
+  const data=D.site.pageBgs&&D.site.pageBgs[pid];
+  if(data&&data.img){
+    zone.innerHTML=`
+      <input type="file" id="pi-${pid}" accept="image/*" style="display:none" onchange="uploadPageBg('${pid}',this)">
+      <img src="${data.img}" style="width:100%;height:110px;object-fit:cover;display:block;pointer-events:none;">
+      <button class="img-change-btn" onclick="event.stopPropagation();document.getElementById('pi-${pid}').click()" style="font-size:10px;padding:3px 8px;">更換</button>
+      <button class="img-change-btn" style="right:52px;font-size:10px;padding:3px 8px;" onclick="event.stopPropagation();removePageBg('${pid}')">移除</button>`;
+    zone.onclick=()=>{};
+    if(por){
+      por.style.display='block';
+      const slider=por.querySelector('input[type=range]');
+      if(slider) slider.value=data.opacity||70;
+      const label=document.getElementById('pov-'+pid);
+      if(label) label.textContent=(data.opacity||70)+'%';
+    }
+  } else {
+    zone.innerHTML=`
+      <input type="file" id="pi-${pid}" accept="image/*" style="display:none" onchange="uploadPageBg('${pid}',this)">
+      <div class="img-preview-empty"><div class="img-upload-icon">↑</div><div class="img-upload-hint" style="font-size:11px;">點擊上傳</div></div>`;
+    zone.onclick=()=>triggerPageBgUpload(pid);
+    if(por) por.style.display='none';
+  }
+}
+
+function applyAllPageBgs(){
+  PAGE_IDS.forEach(pid=>applyPageBg(pid));
+}
+
+// Per-page bg layers: set image on the page's own .pbg / .pov divs
+function showGlobalBg(pid){
+  // For non-home pages
+  const bgEl=document.getElementById('pbg-'+pid);
+  const ovEl=document.getElementById('pov-'+pid);
+  if(!bgEl) return; // home page uses its own heroBgFill system
+  const data=D.site.pageBgs&&D.site.pageBgs[pid];
+  if(data&&data.img){
+    const op=(data.opacity||70)/100;
+    bgEl.style.backgroundImage="url('"+data.img+"')";
+    ovEl.style.background='linear-gradient(160deg,rgba(10,8,6,'+Math.min(op+0.1,1)+') 0%,rgba(18,15,10,'+(op*0.85)+') 60%,rgba(10,8,6,'+op+') 100%)';
+  } else {
+    bgEl.style.backgroundImage='';
+    ovEl.style.background='';
+  }
+}
+
+let _newImgB64 = null; // holds base64 for the "new project" form
+
+function previewNewImg(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(file.size>4*1024*1024){alert('圖片請勿超過 4MB');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _newImgB64=e.target.result;
+    const zone=document.getElementById('np-upload-zone');
+    zone.innerHTML=`
+      <input type="file" id="np-img-input" accept="image/*" style="display:none" onchange="previewNewImg(this)">
+      <img src="${_newImgB64}" class="img-preview-filled">
+      <button class="img-change-btn" onclick="event.stopPropagation();document.getElementById('np-img-input').click()">更換圖片</button>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function uploadImgForProject(pid){
+  const input=document.createElement('input');
+  input.type='file';input.accept='image/*';
+  input.onchange=e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    if(file.size>4*1024*1024){alert('圖片請勿超過 4MB');return;}
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const p=D.projects.find(x=>x.id===pid);
+      if(p){p.img=ev.target.result;saveD();renderAdmProjects();renderTimeline();renderGrid();}
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+// ===== PROJECTS CRUD =====
+function addProject(){
+  const name=document.getElementById('np-name').value.trim();
+  const year=document.getElementById('np-year').value.trim();
+  if(!name||!year){alert('請填寫建案名稱與年份');return;}
+  const proj={
+    id:Date.now(),name,year,
+    type:document.getElementById('np-type').value.trim()||'住宅',
+    img:_newImgB64||null,
+    emoji:'🏢',
+    status:document.getElementById('np-status').value
+  };
+  D.projects.push(proj);
+  _newImgB64=null;
+  saveD();renderAdmProjects();renderTimeline();renderGrid();renderContactSelect();
+  // reset form
+  ['np-name','np-year','np-type'].forEach(id=>document.getElementById(id).value='');
+  const zone=document.getElementById('np-upload-zone');
+  zone.innerHTML=`
+    <input type="file" id="np-img-input" accept="image/*" style="display:none" onchange="previewNewImg(this)">
+    <div id="np-img-preview" class="img-preview-empty">
+      <div class="img-upload-icon">↑</div>
+      <div class="img-upload-hint">點擊上傳圖片<br><span>JPG / PNG / WEBP · 建議 800×600 以上</span></div>
+    </div>`;
+  document.getElementById('np-upload-zone').onclick=()=>document.getElementById('np-img-input').click();
+  showNotice();
+}
+
+function deleteProject(id){
+  if(!confirm('確定刪除此建案？'))return;
+  D.projects=D.projects.filter(p=>p.id!==id);
+  saveD();renderAdmProjects();renderTimeline();renderGrid();renderContactSelect();
+}
+
+function renderAdmProjects(){
+  const statusLabel={presale:'預售中',ready:'即將完工',done:'已完工'};
+  document.getElementById('adm-plist').innerHTML=D.projects.map(p=>`
+    <div class="adm-pitem">
+      <div class="adm-pitem-thumb">
+        ${p.img?`<img src="${p.img}" alt="${p.name}">`:`<span style="font-size:22px">${p.emoji||'🏢'}</span>`}
+      </div>
+      <div class="adm-pitem-l" style="flex:1;">
+        <div class="adm-pitem-name">${p.name}</div>
+        <div class="adm-pitem-meta">${p.year} · ${p.type} · ${statusLabel[p.status]||''}</div>
+      </div>
+      <div class="adm-pitem-r">
+        <button class="adm-btn sm" onclick="uploadImgForProject(${p.id})" style="background:rgba(184,151,106,0.15);color:var(--gold);border:1px solid rgba(184,151,106,0.3);">${p.img?'更換封面':'上傳封面'}</button>
+        <button class="adm-btn sm danger" onclick="deleteProject(${p.id})">刪除</button>
+      </div>
+    </div>`).join('');
+}
+
+// SITE TEXT
+function saveSite(){
+  const s=D.site;
+  s.brand=document.getElementById('st-brand').value;
+  s.eyebrow=document.getElementById('st-eyebrow').value;
+  s.h1=document.getElementById('st-h1').value;
+  s.body=document.getElementById('st-body').value;
+  s.spTitle=document.getElementById('st-sp-title').value;
+  s.spBody=document.getElementById('st-sp-body').value;
+  s.spQuote=document.getElementById('st-sp-quote').value;
+  s.svcTitle=document.getElementById('st-svc-title').value;
+  s.svcIntro=document.getElementById('st-svc-intro').value;
+  s.comm1=document.getElementById('st-comm1').value;
+  s.comm2=document.getElementById('st-comm2').value;
+  saveD();renderSite();showNotice();
+}
+
+// MESSAGES
+function renderAdmMsgs(){
+  const el=document.getElementById('adm-msgs');
+  if(!D.messages.length){el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:13px;">尚無留言</div>';return;}
+  el.innerHTML=D.messages.map(m=>`
+    <div class="adm-msg">
+      <div class="adm-msg-meta">
+        <span class="adm-msg-name">${m.name}</span>
+        <span class="adm-msg-info">${m.phone}</span>
+        ${m.email?`<span class="adm-msg-info">${m.email}</span>`:''}
+        <span class="adm-msg-info">${m.type}</span>
+        ${m.project?`<span style="color:var(--gold);font-size:11.5px;">${m.project}</span>`:''}
+        <span class="adm-msg-time">${m.time}</span>
+        <span class="adm-msg-badge ${m.read?'read':'new'}" onclick="toggleRead(${m.id})">${m.read?'已讀':'● 新訊息'}</span>
+      </div>
+      <div class="adm-msg-body">${m.msg}</div>
+    </div>`).join('');
+}
+function toggleRead(id){
+  const m=D.messages.find(x=>x.id===id);
+  if(m){m.read=!m.read;saveD();renderAdmMsgs();}
+}
+
+function showNotice(){
+  const n=document.getElementById('admNotice');
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),2800);
+}
+
+// ===== INIT =====
+renderSite();
+</script>
+</body>
+</html>
